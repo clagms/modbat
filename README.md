@@ -28,9 +28,9 @@ Clone the repository and `cd` into it.
 
 Assemble the project by running:
 
-    gradle assemble
+    ./gradlew assemble
 
-This will build the project and place the JAR files in "./build".
+This will download the right version of Gradle, build the project, and place the JAR files in "./build".
 
 ## Model syntax
 
@@ -158,7 +158,7 @@ output to a file, use
 Example:
 
 	scala modbat.jar --classpath=modbat-examples.jar \
-    -n=1 -s=2455cfedeadbeef \
+	-n=1 -s=2455cfedeadbeef \
 		--no-redirect-out \
 		modbat.examples.SimpleModel
 
@@ -593,8 +593,8 @@ the name of the file containing the error trace (61a342c60d18ff4d.err).
 It can also be used to reproduce the same trace:
 
 	scala modbat.jar --classpath=modbat-examples.jar \
-                                 -n=1 -s=61a342c60d18ff4d \
-                                 modbat.examples.NioSocket1
+	                             -n=1 -s=61a342c60d18ff4d \
+	                             modbat.examples.NioSocket1
 
 When replaying a trace, Modbat explores the model again, making the same
 choices as originally made when the random number generator was in a
