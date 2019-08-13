@@ -26,7 +26,7 @@ allprojects {
     apply plugin: 'scala'
 
     dependencies {
-        compile 'org.scala-lang:scala-library:2.11.8'
+        compile 'org.scala-lang:scala-library:2.11.12'
     }
 
     repositories {
@@ -70,7 +70,7 @@ jar {
                                          collect { zipTree(it) }
 }
 
-
+s
 apply plugin: "com.github.maiflai.scalatest"
 
 task examplesJar(type: Jar) {
