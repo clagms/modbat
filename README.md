@@ -240,6 +240,8 @@ whereas system tests are run with
 ./gradlew buildDependents
 bin/test.sh
 ```
+On windows, the system tests can be run using [MSYS2](https://www.msys2.org/) with the correct Scala binaries in the PATH environment variable.
+
 Both test suites should pass for a new pull request to be acceptable.
 
 ## Advanced features

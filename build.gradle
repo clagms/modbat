@@ -70,7 +70,6 @@ jar {
                                          collect { zipTree(it) }
 }
 
-s
 apply plugin: "com.github.maiflai.scalatest"
 
 task examplesJar(type: Jar) {
