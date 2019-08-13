@@ -145,15 +145,33 @@ object MBT {
     }
   }
 
+  def recCollectClassLoaderURLs(loader: ClassLoader, allURLs:ListBuffer[URL]): Unit = {
+    if (loader == null) {
+      return
+    }
+    if (loader.isInstanceOf[URLClassLoader]) {
+      for (p <- loader.asInstanceOf[URLClassLoader].getURLs) {
+        Log.debug("Adding " + p + " to classpath.")
+        allURLs += p
+      }
+    }
+    recCollectClassLoaderURLs(loader.getParent, allURLs)
+  }
+
   def configClassLoader(classpath: String) {
     val sep = System.getProperty("path.separator")
     val paths = classpath.split(sep)
     val urls = ListBuffer[URL]()
     for (p <- paths) {
-      Log.debug("Adding " + p + " to classpath.")
       urls += new File(p).toURI.toURL()
     }
-    classLoaderURLs = urls.toArray
+
+    val loader = new URLClassLoader(urls.toArray,
+      Thread.currentThread().getContextClassLoader())
+
+    val allURLs = ListBuffer[URL]()
+    recCollectClassLoaderURLs(loader, allURLs)
+    classLoaderURLs = allURLs.filter(u => new File(u.getFile).exists()).toArray
   }
 
   def setRNG(r: Random) {

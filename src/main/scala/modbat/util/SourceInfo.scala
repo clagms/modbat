@@ -4,7 +4,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
 import java.lang.reflect.Method
-import java.net.URL
+import java.net.{URL, URLClassLoader}
 import java.util.jar.JarFile
 
 import org.objectweb.asm.ClassReader
@@ -15,7 +15,6 @@ import org.objectweb.asm.Type
 import scala.collection.mutable.ListBuffer
 import scala.collection.mutable.HashMap
 import scala.language.existentials
-
 import modbat.log.Log
 import modbat.dsl.Action
 import modbat.mbt.MBT
@@ -349,28 +348,28 @@ object SourceInfo {
     for (url <- urls) {
       val basename = url.getFile()
       if (!basename.isEmpty()) {
-	val file = new File(basename)
-	if (file.exists()) {
-	  if (basename.endsWith(".jar")) {
-	    // use forward slashes for jar file entry
-	    val probedJarEntry = jarEntry(filename, new JarFile(file))
-	    if (probedJarEntry != null) {
-	      return probedJarEntry
-	    }
-	  } else {
-	    // use File.separatorChar for file
-	    val filename2 = filename.replace('/', File.separatorChar)
-	    val f = new File(basename + File.separatorChar + filename2)
-	    if (f.exists()) {
-	      return new FileInputStream(f)
+        val file = new File(basename)
+        if (file.exists()) {
+          if (basename.endsWith(".jar")) {
+            // use forward slashes for jar file entry
+            val probedJarEntry = jarEntry(filename, new JarFile(file))
+            if (probedJarEntry != null) {
+              return probedJarEntry
             }
-	  }
-	  Log.debug(filename + " not found in " + basename + ".")
-	} else {
-	  Log.warn("Warning: class path entry " + basename + " not found.")
-	}
+          } else {
+            // use File.separatorChar for file
+            val filename2 = filename.replace('/', File.separatorChar)
+            val f = new File(basename + File.separatorChar + filename2)
+            if (f.exists()) {
+              return new FileInputStream(f)
+            }
+          }
+          Log.debug(filename + " not found in " + basename + ".")
+        } else {
+          Log.warn("Warning: class path entry " + basename + " not found.")
+        }
       } else {
-	Log.info("Skipping non-file URL " + url + ".")
+        Log.info("Skipping non-file URL " + url + ".")
       }
     }
     Log.error("Class file " + filename + " cannot be loaded.")
@@ -388,7 +387,7 @@ object SourceInfo {
 
   def clsNotFoundMsg(cls: Class[_]) {
     Log.error(cls.getName.replace('.', File.separatorChar) + ".class" +
-	      ": file not found")
+	      s": file not found. URLs searched: ${MBT.classLoaderURLs.map(_.getPath)}")
   }
 
   def computeActionInfo(action: Action, cls: Class[_], method: Method,
